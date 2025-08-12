@@ -22,12 +22,33 @@ export default function Home() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customer_name: formData.name,
+          customer_phone: formData.phone,
+          booking_datetime: formData.datetime,
+          guest_count: parseInt(formData.guests),
+          notes: ''
+        }),
+      });
 
-    alert(`Cảm ơn ${formData.name}! Chúng tôi sẽ liên hệ với bạn sớm để xác nhận đặt bàn.`);
-    setFormData({ name: '', phone: '', datetime: '', guests: '' });
-    setIsSubmitting(false);
+      if (response.ok) {
+        alert(`Cảm ơn ${formData.name}! Chúng tôi sẽ liên hệ với bạn sớm để xác nhận đặt bàn.`);
+        setFormData({ name: '', phone: '', datetime: '', guests: '' });
+      } else {
+        alert('Có lỗi xảy ra khi đặt bàn. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      console.error('Error submitting booking:', error);
+      alert('Có lỗi xảy ra khi đặt bàn. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -313,7 +334,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-yellow-200 font-medium">Địa chỉ</p>
-                      <p className="text-white">123 Đường ABC, Quận XYZ, Hà Nội</p>
+                      <p className="text-white">Khu đô thị Nguyên Khê, Hanoi, Vietnam</p>
                     </div>
                   </div>
 

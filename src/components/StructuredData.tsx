@@ -10,7 +10,7 @@ export const StructuredData = () => {
     ],
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "123 Đường ABC",
+      "streetAddress": "Khu đô thị Nguyên Khê, Hanoi, Vietnam",
       "addressLocality": "Hà Nội",
       "addressRegion": "Hà Nội",
       "postalCode": "100000",
