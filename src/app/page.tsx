@@ -4,6 +4,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
+import { FeaturedDishesSection } from "@/components/FeaturedDishesSection";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -12,11 +16,18 @@ export default function Home() {
     datetime: '',
     guests: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
     alert(`Cảm ơn ${formData.name}! Chúng tôi sẽ liên hệ với bạn sớm để xác nhận đặt bàn.`);
     setFormData({ name: '', phone: '', datetime: '', guests: '' });
+    setIsSubmitting(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,47 +140,7 @@ export default function Home() {
       </section>
 
       {/* Featured Dishes */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-red-100 to-transparent"></div>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-12">
-            <h3 className="text-4xl font-bold text-red-800 mb-4 animate-fade-in-up">
-              Món ăn đặc sắc
-            </h3>
-            <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-red-400 mx-auto rounded-full"></div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center group cursor-pointer">
-              <div className="bg-gradient-to-br from-red-100 to-red-50 rounded-full w-32 h-32 mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <span className="text-5xl group-hover:scale-110 transition-transform duration-300">🦀</span>
-              </div>
-              <h4 className="text-xl font-semibold text-red-800 mb-3 group-hover:text-red-600 transition-colors">Lẩu cua đồng</h4>
-              <p className="text-gray-600 group-hover:text-gray-700 transition-colors">Cua đồng tươi sống, nước dùng thanh ngọt</p>
-            </div>
-
-            <div className="text-center group cursor-pointer">
-              <div className="bg-gradient-to-br from-red-100 to-red-50 rounded-full w-32 h-32 mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <span className="text-5xl group-hover:scale-110 transition-transform duration-300">🍲</span>
-              </div>
-              <h4 className="text-xl font-semibold text-red-800 mb-3 group-hover:text-red-600 transition-colors">Bún riêu cua</h4>
-              <p className="text-gray-600 group-hover:text-gray-700 transition-colors">Bún riêu cua đồng đậm đà, thơm ngon</p>
-            </div>
-
-            <div className="text-center group cursor-pointer">
-              <div className="bg-gradient-to-br from-red-100 to-red-50 rounded-full w-32 h-32 mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <span className="text-5xl group-hover:scale-110 transition-transform duration-300">🥬</span>
-              </div>
-              <h4 className="text-xl font-semibold text-red-800 mb-3 group-hover:text-red-600 transition-colors">Rau củ tươi</h4>
-              <p className="text-gray-600 group-hover:text-gray-700 transition-colors">Rau củ tươi ngon, sạch, an toàn</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <FeaturedDishesSection />
 
       {/* Gallery Section */}
       <section className="py-16 bg-gradient-to-b from-white to-red-50">
@@ -476,13 +447,23 @@ export default function Home() {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="group relative w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-red-900 p-4 rounded-xl font-bold text-lg hover:from-yellow-400 hover:to-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-400/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-2xl"
+                    disabled={isSubmitting}
+                    className="group relative w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-red-900 p-4 rounded-xl font-bold text-lg hover:from-yellow-400 hover:to-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-400/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-2xl disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                   >
                     <span className="relative z-10 flex items-center justify-center">
-                      <svg className="w-6 h-6 mr-2 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
-                      </svg>
-                      Đặt bàn ngay
+                      {isSubmitting ? (
+                        <>
+                          <LoadingSpinner size="sm" color="red" />
+                          <span className="ml-2">Đang xử lý...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-6 h-6 mr-2 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
+                          </svg>
+                          Đặt bàn ngay
+                        </>
+                      )}
                     </span>
                     <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
                   </button>
@@ -499,6 +480,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
 
       {/* Footer */}
       <footer className="bg-red-900 text-white py-8">
